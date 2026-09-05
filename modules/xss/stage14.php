@@ -15,12 +15,13 @@ xss_head(14, 'DOM型-eval', '前端 eval() 直接执行 URL hash 中的代码。
   <p>本关漏洞在前端 JavaScript 中。请在 URL 末尾添加 hash 参数触发。</p>
   <p>示例 payload：<code>#alert(1)</code></p>
 </div>
+<?php if ($level === 'impossible' || $level === 'high'): ?>
+<script>/* high/impossible 级别：禁用 eval，漏洞代码不执行 */</script>
+<?php else: ?>
 <script>
   var hash = location.hash.substring(1);
   if (hash) { try { eval(decodeURIComponent(hash)); } catch(e) {} }
 </script>
-<?php if ($level === 'impossible' || $level === 'high'): ?>
-<script>/* high/impossible 级别：漏洞代码不执行 */</script>
 <?php endif; ?>
 <form method="get" class="lab">
   <div class="row"><input type="hidden" name="dom_passed" value="1"><input type="submit" value="我已触发 XSS，标记通关"></div>

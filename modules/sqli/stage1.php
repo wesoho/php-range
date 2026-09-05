@@ -1,7 +1,7 @@
 <?php
-// 第 1 关：整数型 SQL 注入（无闭合）—— 对标 sqli-labs Less-1
+// 第 1 关：整数型 SQL 注入（无闭合）—— 对标 sqli-labs Less-2
 require_once dirname(__DIR__, 2) . '/config.php';
-require_once APP_ROOT . '/includes/layout.php';
+require_once APP_ROOT . '/includes/sqli_helper.php';
 if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 
 $level = get_level();
@@ -28,16 +28,8 @@ try {
 
 if ($passed) pass_stage('sqli', 1, 'id=' . ($_GET['id'] ?? ''));
 
-$STAGES = [
-    1=>'整数型无闭合',2=>'单引号闭合',3=>'双引号闭合',4=>'单引号+括号',5=>'双引号+括号',
-    6=>'报错-floor',7=>'报错-updatexml',8=>'报错-extractvalue',
-    9=>'布尔盲注-整数',10=>'布尔盲注-单引号',11=>'布尔盲注-双引号',12=>'布尔盲注-括号',
-    13=>'时间盲注-单引号',14=>'时间盲注-双引号',15=>'堆叠注入',16=>'二次注入',17=>'宽字节注入',
-    18=>'like注入',19=>'insert注入',20=>'update注入',21=>'delete注入',22=>'搜索型注入',
-    23=>'WAF-内联注释',24=>'WAF-等价函数',25=>'WAF-大小写/双写',
-];
 render_header('SQL注入 第1关', 'sqli');
-render_stage_nav('sqli', $STAGES, 1);
+render_stage_nav('sqli', $SQLI_STAGES, 1);
 ?>
 <div class="card">
   <h2>第 1 关 · 整数型 SQL 注入（无闭合）</h2>

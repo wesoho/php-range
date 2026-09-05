@@ -15,13 +15,14 @@ xss_head(15, 'DOM型-innerHTML', '前端 innerHTML 赋值未过滤的用户输�
   <p>本关漏洞在前端 JavaScript 中。请在 URL 末尾添加 hash 参数触发。</p>
   <p>示例 payload：<code>#<img src=x onerror=alert(1)></code></p>
 </div>
+<div id="dom-out"></div>
+<?php if ($level === 'impossible' || $level === 'high'): ?>
+<script>/* high/impossible 级别：用 textContent 代替 innerHTML，漏洞代码不执行 */</script>
+<?php else: ?>
 <script>
   var hash = location.hash.substring(1);
   if (hash) { document.getElementById('dom-out').innerHTML = decodeURIComponent(hash); }
 </script>
-<div id="dom-out"></div>
-<?php if ($level === 'impossible' || $level === 'high'): ?>
-<script>/* high/impossible 级别：漏洞代码不执行 */</script>
 <?php endif; ?>
 <form method="get" class="lab">
   <div class="row"><input type="hidden" name="dom_passed" value="1"><input type="submit" value="我已触发 XSS，标记通关"></div>

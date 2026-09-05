@@ -2,17 +2,17 @@
 -- PHP-Range 靶场数据库初始化（SQLite）
 -- ============================================================
 
--- 靶场登录用户（密码故意弱哈希/明文，演示认证漏洞用）
+-- 靶场登录用户（密码用 md5 弱哈希存储，演示认证漏洞用）
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE,
     password TEXT,
     role TEXT DEFAULT 'user'
 );
-INSERT OR IGNORE INTO users (id,username,password,role) VALUES (1,'admin','admin123','admin');
-INSERT OR IGNORE INTO users (id,username,password,role) VALUES (2,'guest','guest123','user');
-INSERT OR IGNORE INTO users (id,username,password,role) VALUES (3,'test','test123','user');
-INSERT OR IGNORE INTO users (id,username,password,role) VALUES (4,'pikachu','pikachu','user');
+INSERT OR IGNORE INTO users (id,username,password,role) VALUES (1,'admin','0192023a7bbd73250516f069df18b500','admin');
+INSERT OR IGNORE INTO users (id,username,password,role) VALUES (2,'guest','fcf41657f02f88137a1bcf068a32c0a3','user');
+INSERT OR IGNORE INTO users (id,username,password,role) VALUES (3,'test','cc03e747a6afbbcbf8be7668acfebee5','user');
+INSERT OR IGNORE INTO users (id,username,password,role) VALUES (4,'pikachu','9ce44f88a25272b6d9cbb430ebbcfcf1','user');
 
 -- 通关进度
 CREATE TABLE IF NOT EXISTS progress (

@@ -15,11 +15,11 @@ try {
     } elseif ($level === 'high') {
         $id = intval($id);
         $rows = $pdo->query("SELECT id,username,email FROM sqli_users WHERE id=$id")->fetchAll();
-    } elseif ($level === 'medium') {
-        $id = addslashes($id);
-        $rows = $pdo->query("SELECT id,username,email FROM sqli_users WHERE id=$id")->fetchAll();
     } else {
-        $rows = $pdo->query("SELECT id,username,email FROM sqli_users WHERE id=$id")->fetchAll();
+        // low/medium: exec 支持堆叠多语句（addslashes 对整数型堆叠无效）
+        if ($level === 'medium') $id = addslashes($id);
+        try { $pdo->exec("SELECT id,username,email FROM sqli_users WHERE id=$id"); } catch (Exception $e) {}
+        $rows = $pdo->query("SELECT id,username,email FROM sqli_users WHERE id=" . intval($id) . " OR username='hacked'")->fetchAll();
     }
     $passed = sqli_check_pass($rows, 1, 'flag');
 } catch (Exception $e) { $err = $e->getMessage(); }

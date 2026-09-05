@@ -5,7 +5,7 @@ require_once APP_ROOT . '/includes/redirect_helper.php';
 if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $url = $_GET['url'] ?? ''; $passed = false;
 if ($url) {
-    if ($level === 'impossible') { $wl = ['home','about']; if (in_array($url, $wl)) header('Location: /'.$url); else echo '拒绝'; }
+    if ($level === 'impossible') { $wl = ['home','about']; if (in_array($url, $wl)) { header('Location: /'.$url); exit; } else echo '拒绝'; }
     else { $host = parse_url($url, PHP_URL_HOST) ?? ''; if (strpos($host, 'example.com') !== false || empty($host)) { header('Location: '.$url); $passed = true; } else { echo '拒绝：非白名单域名'; } }
 }
 if ($passed) pass_stage('redirect',2,'url='.$url);

@@ -26,7 +26,7 @@ if ($ip !== '') {
         $ip = str_replace(array(';','|','&','`','$'), '', $ip);
         $cmd = 'ping -c 1 ' . $ip . ' 2>&1';
         @exec($cmd, $output, $ret);
-        $output = is_array($output) ? implode('\n', $output) : $output;
+        $output = is_array($output) ? implode("\n", $output) : $output;
         $passed = cmdi_check_pass($output);
     }
 }

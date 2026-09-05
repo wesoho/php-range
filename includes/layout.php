@@ -123,10 +123,12 @@ function pass_result($passed, $detail = '') {
 
 // ---- 教程面板（八段式）----
 function tutorial_panel($sections) {
+    static $tabCounter = 0;
+    $tabId = $tabCounter++;
     echo '<div class="tutorial"><h3>📚 教程</h3><div class="tabs">';
     $i = 0;
     foreach ($sections as $name => $body) {
-        $id = 'tab'.spl_object_id($sections).$i;
+        $id = 'tab'.$tabId.'_'.$i;
         echo '<input type="radio" name="ttabs" id="'.$id.'" '.($i===0?'checked':'').'>';
         echo '<label for="'.$id.'">'.h($name).'</label>';
         echo '<div class="tab-body">'.$body.'</div>';

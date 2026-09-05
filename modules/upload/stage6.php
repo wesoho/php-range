@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
             $head = file_get_contents($_FILES["file"]["tmp_name"], false, null, 0, 6);
             $allow = in_array($head, ["GIF89a","GIF87a","\x89PNG"]) || substr($head,0,2)==="\xff\xd8";
         }
-        if ($allow) move_uploaded_file($tmp, UPLOAD_DIR . $name);
+        if ($allow) move_uploaded_file($tmp, UPLOAD_DIR . basename($name));
         $msg = $allow ? '上传成功' : '拒绝';
     } else {
         $ext = pathinfo($name, PATHINFO_EXTENSION);

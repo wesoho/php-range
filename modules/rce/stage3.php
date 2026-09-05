@@ -5,8 +5,12 @@ require_once APP_ROOT . '/includes/rce_helper.php';
 if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $code = $_GET['code'] ?? ''; $output = ''; $passed = false;
 if ($code) {
-    if ($level === 'impossible') { $output = '安全'; }
-    else { $output = @preg_replace('/.*/e', $code, 'x'); if ($output !== null) $passed = true; }
+    if ($level === 'impossible') { $output = '安全：禁用 /e 修饰符，改用 preg_replace_callback'; }
+    else {
+        // 模拟 preg_replace /e 修饰符行为（PHP7+ 已移除 /e，用 eval 等价实现）
+        $output = @eval('return ' . $code . ';');
+        if ($output !== false) $passed = true;
+    }
 }
 if ($passed) pass_stage('rce',3,'code='.$code);
 rce_head(3, 'preg_replace /e', 'preg_replace /e修饰符执行代码');

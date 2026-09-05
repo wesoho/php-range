@@ -4,7 +4,7 @@ require_once dirname(__DIR__, 2) . '/config.php';
 require_once APP_ROOT . '/includes/infoleak_helper.php';
 if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $passed = false; $output = '';
-$dir = '/workspace/php-range/public/uploads';
+$dir = APP_ROOT . '/public/uploads'; if (!is_dir($dir)) @mkdir($dir, 0755, true);
 $files = glob($dir.'/*'); $output = '目录内容：
 ';
 foreach ($files as $f) { $output .= basename($f).' ('.filesize($f).' B)

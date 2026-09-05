@@ -5,7 +5,7 @@ require_once APP_ROOT . '/includes/redirect_helper.php';
 if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $url = $_GET['url'] ?? ''; $passed = false;
 if ($url) {
-    if ($level === 'impossible') { if (strpos($url,'://') !== false || strpos($url,'//') !== false) echo '拒绝'; else header('Location: '.$url); }
+    if ($level === 'impossible') { if (strpos($url,'://') !== false || strpos($url,'//') !== false) echo '拒绝'; else { header('Location: '.$url); exit; } }
     else { if (stripos($url, 'http://') === 0 || stripos($url, 'https://') === 0) { echo '拒绝：不允许绝对URL'; } else { header('Location: '.$url); $passed = true; } }
 }
 if ($passed) pass_stage('redirect',3,'url='.$url);

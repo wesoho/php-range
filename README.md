@@ -58,8 +58,7 @@ php -S 127.0.0.1:8800 -t public
 ├── data/             # SQLite 数据库与初始化 SQL
 ├── includes/         # 各模块辅助类（漏洞逻辑所在）
 ├── modules/          # 漏洞关卡页面（modules/<模块>/stageN.php）
-├── public/           # Web 入口（dashboard、login、quiz 等）
-└── solutions/        # 参考解法
+└── public/           # Web 入口（dashboard、login、quiz 等）
 ```
 
 ## License

@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $u = trim($_POST['username'] ?? '');
     $p = $_POST['password'] ?? '';
     $st = db()->prepare("SELECT * FROM users WHERE username=? AND password=?");
-    $st->execute([$u, $p]);
+    $st->execute([$u, md5($p)]);
     $row = $st->fetch();
     if ($row) {
         $_SESSION['user'] = $row['username'];

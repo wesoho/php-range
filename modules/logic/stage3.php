@@ -6,7 +6,7 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 
 $level = get_level(); $token = $_GET['token'] ?? ''; $output = ''; $passed = false;
 $expected_token = $level === 'impossible' ? hash_hmac('sha256','reset',session_id()) : substr(md5(date('Y-m-d')),0,8);
-if ($token) { if ($level === 'impossible') { $passed = hash_equals($expected_token, $token); } else { $passed = ($token === $expected_token || $token === 'admin' || strlen($token) > 0); } $output = $passed ? '密码已重置' : 'token错误'; }
+if ($token) { if ($level === 'impossible') { $passed = false; $output = 'token错误（安全：服务端一次性token）'; } else { $passed = ($token === $expected_token || $token === 'admin' || strlen($token) > 0); $output = $passed ? '密码已重置' : 'token错误'; } }
 if ($passed) pass_stage('logic',3,'token='.$token);
 
 logic_head(3, '密码重置逻辑', '重置token可预测或可绕过');

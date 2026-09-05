@@ -15,9 +15,15 @@ $mod_stats = [];
 
 foreach ($MODULES as $mkey => $minfo) {
     [$mname, $mdesc, $mcount] = $minfo;
-    $passed = db()->query("SELECT COUNT(*) FROM progress WHERE user=".db()->quote($user)." AND module=".db()->quote($mkey)." AND passed=1")->fetchColumn();
-    $attempts = db()->query("SELECT COUNT(*) FROM attempts WHERE user=".db()->quote($user)." AND module=".db()->quote($mkey))->fetchColumn();
-    $fails = db()->query("SELECT COUNT(*) FROM attempts WHERE user=".db()->quote($user)." AND module=".db()->quote($mkey)." AND passed=0")->fetchColumn();
+    $st = db()->prepare("SELECT COUNT(*) FROM progress WHERE user=? AND module=? AND passed=1");
+    $st->execute([$user, $mkey]);
+    $passed = $st->fetchColumn();
+    $st = db()->prepare("SELECT COUNT(*) FROM attempts WHERE user=? AND module=?");
+    $st->execute([$user, $mkey]);
+    $attempts = $st->fetchColumn();
+    $st = db()->prepare("SELECT COUNT(*) FROM attempts WHERE user=? AND module=? AND passed=0");
+    $st->execute([$user, $mkey]);
+    $fails = $st->fetchColumn();
     $pct = $mcount > 0 ? round($passed / $mcount * 100) : 0;
     $total_stages += $mcount;
     $total_passed += $passed;

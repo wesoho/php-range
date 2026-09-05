@@ -6,7 +6,7 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $passed = false; $output = '';
 $old_sid = session_id();
 if (isset($_GET['login'])) {
-    if ($level === 'impossible') { session_regenerate_id(true); $passed = true; }
+    if ($level === 'impossible' || $level === 'high') { session_regenerate_id(true); }
     else { $_SESSION['user'] = 'test'; $passed = true; }
     $new_sid = session_id(); $output = '旧SID: '.$old_sid.' 新SID: '.$new_sid; if ($old_sid === $new_sid) $output .= ' (未变！会话固定漏洞)';
 }

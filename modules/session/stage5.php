@@ -6,7 +6,7 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $passed = false; $output = '';
 if (isset($_GET['sid'])) {
     if ($level === 'impossible') { $output = '安全：绑定IP/UA检查'; }
-    else { session_id($_GET['sid']); session_start(); $output = '使用传入的SID: '.$_GET['sid']; $passed = true; }
+    else { $output = '使用传入的SID: '.$_GET['sid'].' (无IP/UA绑定，可劫持)'; $passed = true; }
 } else { $output = '当前SID: '.session_id().' (可传入sid参数劫持)'; }
 if ($passed) pass_stage('session',5,'session hijack');
 session_head(5, '会话劫持', '无IP/UA绑定可劫持');

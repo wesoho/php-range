@@ -32,18 +32,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
             $head = file_get_contents($_FILES["file"]["tmp_name"], false, null, 0, 6);
             $allow = in_array($head, ["GIF89a","GIF87a","\x89PNG"]) || substr($head,0,2)==="\xff\xd8";
         }
-        if ($allow) move_uploaded_file($tmp, UPLOAD_DIR . $name);
+        if ($allow) move_uploaded_file($tmp, UPLOAD_DIR . basename($name));
         $msg = $allow ? '上传成功' : '拒绝';
     } else {
-        $ext = pathinfo($name, PATHINFO_EXTENSION);
-        $allow = in_array($ext, ["jpg","png","gif"]);
-        if ($allow) {
-            move_uploaded_file($tmp, UPLOAD_DIR . $name);
-            $msg = '上传成功：' . $name;
-            $passed = upload_check_pass($name);
-        } else {
-            $msg = '拒绝';
-        }
+        // low: 无过滤任意上传（条件竞争：上传后短暂存在，并发访问执行）
+        move_uploaded_file($tmp, UPLOAD_DIR . $name);
+        $msg = '上传成功：' . $name;
+        $passed = upload_check_pass($name);
     }
 }
 

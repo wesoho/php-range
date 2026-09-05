@@ -13,8 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($passed) pass_stage('csrf',1,'csrf');
 
 csrf_head(1, '无防护CSRF', '修改密码无任何CSRF防护');
+$csrf_token = hash_hmac('sha256', 'csrf', session_id());
 ?>
-<form method="post" class="lab"><div class="row"><label>新密码</label><input type="text" name="newpwd" style="width:300px"></div><div class="row"><input type="submit" value="修改密码"></div></form>
+<form method="post" class="lab"><div class="row"><label>新密码</label><input type="text" name="newpwd" style="width:300px"></div><?php if ($level === 'impossible'): ?><input type="hidden" name="token" value="<?= h($csrf_token) ?>"><?php endif; ?><div class="row"><input type="submit" value="修改密码"></div></form>
 <?php if ($passed) csrf_pass(true); ?>
 <?php
 csrf_tail(['hint' => '构造跨站POST请求', 'full' => '<form action="http://靶场/stage1.php" method="POST"><input name="newpwd" value="hacked"></form>'], [

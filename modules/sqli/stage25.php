@@ -15,17 +15,16 @@ try {
     } elseif ($level === 'high') {
         $id = intval($id);
         $rows = $pdo->query("SELECT id,username,email FROM sqli_users WHERE id=$id")->fetchAll();
-    } elseif ($level === 'medium') {
-        $id = addslashes($id);
-        $rows = $pdo->query("SELECT id,username,email FROM sqli_users WHERE id=$id")->fetchAll();
     } else {
+        // WAF: 大小写敏感过滤小写 union/select（可用混合大小写绕过）
+        $id = str_replace(['union', 'select'], '', $id);
         $rows = $pdo->query("SELECT id,username,email FROM sqli_users WHERE id=$id")->fetchAll();
     }
     $passed = sqli_check_pass($rows, 1, 'flag');
 } catch (Exception $e) { $err = $e->getMessage(); }
 if ($passed) pass_stage('sqli', 25, $id);
 
-sqli_head(25, 'WAF-大小写绕过', 'WAF 大小写敏感过滤 union，用 UnIoN 混合大小写绕过。');
+sqli_head(25, 'WAF-大小写绕过', 'WAF 大小写敏感过滤小写 union/select，用 UnIoN/SeLeCt 混合大小写绕过。');
 sqli_form('id', $id);
 sqli_error($err); sqli_pass($passed);
 sqli_result($rows);

@@ -16,7 +16,9 @@ echo '<h2>📊 通关进度</h2>';
 
 foreach ($MODULES as $mkey => $minfo) {
     [$mname, $mdesc, $mcount] = $minfo;
-    $passed = db()->query("SELECT COUNT(*) FROM progress WHERE user=".db()->quote($user)." AND module=".db()->quote($mkey)." AND passed=1")->fetchColumn();
+    $st = db()->prepare("SELECT COUNT(*) FROM progress WHERE user=? AND module=? AND passed=1");
+    $st->execute([$user, $mkey]);
+    $passed = $st->fetchColumn();
     $pct = $mcount > 0 ? round($passed / $mcount * 100) : 0;
     echo '<div class="card">';
     echo '<h3>'.h($mname).' <small>('.intval($passed).'/'.intval($mcount).' 关 · '.$pct.'%)</small></h3>';
