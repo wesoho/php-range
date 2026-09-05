@@ -1,0 +1,10 @@
+# 运行时产物
+data/*.db
+*.sqlite
+uploads/
+
+# 备份/临时文件
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
