@@ -6,7 +6,15 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $tpl = $_GET['tpl'] ?? ''; $output = ''; $passed = false;
 if ($tpl) {
     if ($level === 'impossible') { $output = h($tpl); }
-    else { if (stripos($tpl,'eval') === false) { $output = eval('return '.$tpl.';'); if ($output !== false) $passed = true; } else { $output = '过滤了eval'; } }
+    else {
+        if (stripos($tpl,'eval') === false) {
+            // 模拟模板引擎渲染表达式
+            ob_start();
+            try { $output = eval('return ' . $tpl . ';'); $passed = true; }
+            catch (Throwable $e) { echo 'PHP 报错：' . $e->getMessage(); }
+            ob_end_clean();
+        } else { $output = '过滤了eval'; }
+    }
 }
 if ($passed) pass_stage('ssti',3,'tpl='.$tpl);
 ssti_head(3, '过滤eval', '过滤eval但可用assert');

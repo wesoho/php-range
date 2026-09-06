@@ -5,8 +5,17 @@ require_once APP_ROOT . '/includes/rce_helper.php';
 if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $func = $_GET['func'] ?? ''; $arg = $_GET['arg'] ?? ''; $output = ''; $passed = false;
 if ($func) {
-    if ($level === 'impossible') { $output = '安全'; }
-    else { ob_start(); if (function_exists($func)) { $func($arg); } $output = ob_get_clean(); if (strlen($output) > 0) $passed = true; if (!$passed && function_exists($func)) $passed = true; }
+    if ($level === 'impossible') { $output = '安全：白名单函数，禁止动态调用'; }
+    else {
+        ob_start();
+        try {
+            if (function_exists($func)) {
+                if ($arg === '') { $func(); } else { $func($arg); }
+                $passed = true;
+            }
+        } catch (Throwable $e) { echo 'PHP 报错：' . $e->getMessage(); }
+        $output = ob_get_clean();
+    }
 }
 if ($passed) pass_stage('rce',5,'func='.$func);
 rce_head(5, '动态调用', '动态函数调用');

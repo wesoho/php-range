@@ -6,7 +6,12 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $code = $_GET['code'] ?? ''; $output = ''; $passed = false;
 if ($code) {
     if ($level === 'impossible') { $output = '安全：禁止eval'; }
-    else { ob_start(); $ret = @eval($code); $output = ob_get_clean(); if ($ret !== false || strlen($output) > 0) $passed = true; }
+    else {
+        ob_start();
+        try { eval($code); $passed = true; }
+        catch (Throwable $e) { echo 'PHP 报错：' . $e->getMessage(); }
+        $output = ob_get_clean();
+    }
 }
 if ($passed) pass_stage('rce',1,'code='.$code);
 rce_head(1, 'eval注入', 'eval直接执行用户输入');

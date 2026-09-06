@@ -6,7 +6,14 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $tpl = $_GET['tpl'] ?? ''; $output = ''; $passed = false;
 if ($tpl) {
     if ($level === 'impossible') { $output = h($tpl); }
-    else { $tpl_filtered = str_replace('{{','',$tpl); $output = eval('return '.$tpl_filtered.';'); if ($output !== false) $passed = true; }
+    else {
+        $tpl_filtered = str_replace('{{','',$tpl);
+        // 模拟模板引擎渲染表达式
+        ob_start();
+        try { $output = eval('return ' . $tpl_filtered . ';'); $passed = true; }
+        catch (Throwable $e) { echo 'PHP 报错：' . $e->getMessage(); }
+        ob_end_clean();
+    }
 }
 if ($passed) pass_stage('ssti',2,'tpl='.$tpl);
 ssti_head(2, '过滤花括号', '过滤{{但可用{ {或{${绕过');

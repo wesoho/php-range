@@ -6,7 +6,13 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $tpl = $_GET['tpl'] ?? ''; $output = ''; $passed = false;
 if ($tpl) {
     if ($level === 'impossible') { $output = h($tpl); }
-    else { $output = eval('return '.$tpl.';'); if ($output !== false) $passed = true; }
+    else {
+        // 模拟模板引擎把 {{...}} 中的表达式交给 eval 渲染
+        ob_start();
+        try { $output = eval('return ' . $tpl . ';'); $passed = true; }
+        catch (Throwable $e) { echo 'PHP 报错：' . $e->getMessage(); }
+        ob_end_clean();
+    }
 }
 if ($passed) pass_stage('ssti',1,'tpl='.$tpl);
 ssti_head(1, '无过滤SSTI', '模板中直接eval用户输入');

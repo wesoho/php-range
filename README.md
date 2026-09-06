@@ -43,8 +43,8 @@
 ## 快速开始
 
 ```bash
-# 在项目根目录启动内置服务器
-php -S 127.0.0.1:8800 -t public
+# 在项目根目录启动内置服务器（router.php 负责把 /modules/ 映射到项目根）
+php -S 127.0.0.1:8800 -t public public/router.php
 ```
 
 浏览器访问 http://127.0.0.1:8800

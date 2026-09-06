@@ -8,8 +8,12 @@ if ($code) {
     if ($level === 'impossible') { $output = '安全：禁用 /e 修饰符，改用 preg_replace_callback'; }
     else {
         // 模拟 preg_replace /e 修饰符行为（PHP7+ 已移除 /e，用 eval 等价实现）
-        $output = @eval('return ' . $code . ';');
-        if ($output !== false) $passed = true;
+        ob_start();
+        $ret = null;
+        try { $ret = eval('return ' . $code . ';'); $passed = true; }
+        catch (Throwable $e) { echo 'PHP 报错：' . $e->getMessage(); }
+        $output = ob_get_clean();
+        if ($output === '' && $ret !== null) $output = var_export($ret, true);
     }
 }
 if ($passed) pass_stage('rce',3,'code='.$code);
