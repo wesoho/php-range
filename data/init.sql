@@ -32,6 +32,11 @@ CREATE TABLE IF NOT EXISTS quiz_scores (
     user TEXT, category TEXT, score INTEGER, total INTEGER, ts TEXT
 );
 
+-- 索引：加速仪表盘/错题本/进度页的按用户统计查询
+CREATE INDEX IF NOT EXISTS idx_attempts_user_mod ON attempts(user, module, passed);
+CREATE INDEX IF NOT EXISTS idx_attempts_ts ON attempts(ts);
+CREATE INDEX IF NOT EXISTS idx_quiz_user_cat ON quiz_scores(user, category);
+
 -- ===== SQL 注入靶场数据 =====
 -- 用户表（字符型/登录注入）
 CREATE TABLE IF NOT EXISTS sqli_users (

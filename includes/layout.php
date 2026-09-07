@@ -94,49 +94,6 @@ function alert($msg, $type = 'info') {
     echo '<div class="alert alert-'.$bs_type.'">'.h($msg).'</div>';
 }
 
-// ---- 源码查看器 ----
-function source_block($file, $title = '当前级别源码') {
-    if (!file_exists($file)) return;
-    $code = file_get_contents($file);
-    echo '<details class="source-viewer"><summary>📄 '.h($title).'（点击展开）</summary>';
-    echo '<div class="code">';
-    highlight_string($code);
-    echo '</div></details>';
-}
-
-// ---- 关卡头部（标题+关卡导航+源码+教程入口）----
-function challenge_header($module, $level_no, $title, $desc) {
-    echo '<div class="challenge-head">';
-    echo '<h2>'.h($module).' · 第 '.$level_no.' 关 · '.h($title).'</h2>';
-    echo '<p class="desc">'.h($desc).'</p>';
-    echo '</div>';
-}
-
-// ---- 通关判定显示 ----
-function pass_result($passed, $detail = '') {
-    if ($passed) {
-        echo '<div class="alert alert-success">✅ 通关！'.h($detail).'</div>';
-    } else {
-        echo '<div class="alert alert-danger">❌ 未通关，继续尝试。'.h($detail).'</div>';
-    }
-}
-
-// ---- 教程面板（八段式）----
-function tutorial_panel($sections) {
-    static $tabCounter = 0;
-    $tabId = $tabCounter++;
-    echo '<div class="tutorial"><h3>📚 教程</h3><div class="tabs">';
-    $i = 0;
-    foreach ($sections as $name => $body) {
-        $id = 'tab'.$tabId.'_'.$i;
-        echo '<input type="radio" name="ttabs" id="'.$id.'" '.($i===0?'checked':'').'>';
-        echo '<label for="'.$id.'">'.h($name).'</label>';
-        echo '<div class="tab-body">'.$body.'</div>';
-        $i++;
-    }
-    echo '</div></div>';
-}
-
 // ---- 提示显示（根据提示模式）----
 function show_hint($hints) {
     $mode = get_hint();
@@ -149,9 +106,10 @@ function show_hint($hints) {
     }
 }
 
-// ---- 记录通关进度 ----
+// ---- 记录一次攻击尝试（成功则同时写入通关进度）----
+// attempts 表是仪表盘"最近活动/失败次数"的数据来源，每关判定后都应调用
 function record_attempt($module, $level_no, $passed, $payload = '') {
-    if (!isset($_SESSION['user'])) return;
+    if (empty($_SESSION['user'])) return;
     try {
         $pdo = db();
         $pdo->prepare("INSERT INTO attempts(user,module,level_no,passed,payload,ts) VALUES(?,?,?,?,?,datetime('now'))")
@@ -161,6 +119,11 @@ function record_attempt($module, $level_no, $passed, $payload = '') {
                 ->execute([$_SESSION['user'], $module, $level_no]);
         }
     } catch (Exception $e) {}
+}
+
+// 记录通关（各关卡统一入口；evidence 作为 payload 存入 attempts 供复盘）
+function pass_stage($module, $stage, $evidence = '') {
+    record_attempt($module, $stage, true, $evidence);
 }
 
 // ---- 判断某关是否已通关 ----
@@ -173,13 +136,21 @@ function is_passed($module, $level_no) {
     } catch (Exception $e) { return false; }
 }
 
-// 记录通关
-function pass_stage($module, $stage, $evidence = '') {
-    if (empty($_SESSION['user'])) return;
+// ---- 一次查询取回某模块全部已通关关卡号（供导航/徽章批量渲染）----
+function passed_set($module) {
+    static $cache = [];
+    $user = $_SESSION['user'] ?? null;
+    if (!$user) return [];
+    $key = $user . '|' . $module;
+    if (array_key_exists($key, $cache)) return $cache[$key];
+    $set = [];
     try {
-        db()->prepare("INSERT OR REPLACE INTO progress(user,module,level_no,passed,ts) VALUES(?,?,?,1,datetime('now'))")
-           ->execute([$_SESSION['user'], $module, $stage]);
+        $st = db()->prepare("SELECT level_no FROM progress WHERE user=? AND module=? AND passed=1");
+        $st->execute([$user, $module]);
+        foreach ($st->fetchAll(PDO::FETCH_COLUMN) as $no) $set[(int)$no] = true;
     } catch (Exception $e) {}
+    $cache[$key] = $set;
+    return $set;
 }
 
 // 八段式教程面板

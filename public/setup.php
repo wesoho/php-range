@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__DIR__) . '/config.php';
 require_once APP_ROOT . '/includes/layout.php';
+if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $msg = '';
 $err = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

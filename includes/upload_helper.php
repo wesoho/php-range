@@ -42,7 +42,7 @@ function upload_tail($hints, $tutorial, $source_file) {
 // 通关判定：上传的文件是否为可执行扩展名
 function upload_check_pass($filename) {
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    $dangerous = ['php','phtml','pht','php3','php4','php5','php7','phps','pht','htaccess'];
+    $dangerous = ['php','phtml','pht','php3','php4','php5','php7','phps','htaccess'];
     return in_array($ext, $dangerous);
 }
 

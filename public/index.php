@@ -7,11 +7,16 @@ global $MODULES;
 
 $total_stages = 0;
 foreach ($MODULES as $m) $total_stages += $m[2];
+// 一条查询取回全部模块的通关数，避免每模块一次 COUNT（N+1）
+$passed_by_module = [];
 $total_passed = 0;
 if ($user) {
-    foreach ($MODULES as $k => $m) {
-        try { $r = db()->prepare("SELECT COUNT(*) FROM progress WHERE user=? AND module=? AND passed=1"); $r->execute([$user, $k]); $total_passed += (int)$r->fetchColumn(); } catch (Exception $e) {}
-    }
+    try {
+        $r = db()->prepare("SELECT module, COUNT(*) AS c FROM progress WHERE user=? AND passed=1 GROUP BY module");
+        $r->execute([$user]);
+        foreach ($r->fetchAll() as $row) $passed_by_module[$row['module']] = (int)$row['c'];
+        $total_passed = array_sum($passed_by_module);
+    } catch (Exception $e) {}
 }
 $pct = $total_stages > 0 ? round($total_passed / $total_stages * 100) : 0;
 ?>
@@ -61,8 +66,7 @@ $pct = $total_stages > 0 ? round($total_passed / $total_stages * 100) : 0;
 <h2 class="mb-3"><i class="bi bi-shield-fill-check" style="color:#9fef00"></i> 漏洞模块</h2>
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-4">
 <?php foreach ($MODULES as $k => $m):
-    $total = $m[2]; $done = 0;
-    try { $r = db()->prepare("SELECT COUNT(*) FROM progress WHERE user=? AND module=? AND passed=1"); $r->execute([$user, $k]); $done = (int)$r->fetchColumn(); } catch (Exception $e) {}
+    $total = $m[2]; $done = $passed_by_module[$k] ?? 0;
     $mpct = $total > 0 ? round($done / $total * 100) : 0;
 ?>
   <div class="col">

@@ -13,17 +13,25 @@ $total_stages = 0;
 $total_passed = 0;
 $mod_stats = [];
 
+// 三条 GROUP BY 一次取回，避免每模块 3 次 COUNT（N+1）
+$passed_map = $attempt_map = $fail_map = [];
+try {
+    $st = db()->prepare("SELECT module, COUNT(*) AS c FROM progress WHERE user=? AND passed=1 GROUP BY module");
+    $st->execute([$user]);
+    foreach ($st->fetchAll() as $r) $passed_map[$r['module']] = (int)$r['c'];
+    $st = db()->prepare("SELECT module, COUNT(*) AS c FROM attempts WHERE user=? GROUP BY module");
+    $st->execute([$user]);
+    foreach ($st->fetchAll() as $r) $attempt_map[$r['module']] = (int)$r['c'];
+    $st = db()->prepare("SELECT module, COUNT(*) AS c FROM attempts WHERE user=? AND passed=0 GROUP BY module");
+    $st->execute([$user]);
+    foreach ($st->fetchAll() as $r) $fail_map[$r['module']] = (int)$r['c'];
+} catch (Exception $e) {}
+
 foreach ($MODULES as $mkey => $minfo) {
     [$mname, $mdesc, $mcount] = $minfo;
-    $st = db()->prepare("SELECT COUNT(*) FROM progress WHERE user=? AND module=? AND passed=1");
-    $st->execute([$user, $mkey]);
-    $passed = $st->fetchColumn();
-    $st = db()->prepare("SELECT COUNT(*) FROM attempts WHERE user=? AND module=?");
-    $st->execute([$user, $mkey]);
-    $attempts = $st->fetchColumn();
-    $st = db()->prepare("SELECT COUNT(*) FROM attempts WHERE user=? AND module=? AND passed=0");
-    $st->execute([$user, $mkey]);
-    $fails = $st->fetchColumn();
+    $passed = $passed_map[$mkey] ?? 0;
+    $attempts = $attempt_map[$mkey] ?? 0;
+    $fails = $fail_map[$mkey] ?? 0;
     $pct = $mcount > 0 ? round($passed / $mcount * 100) : 0;
     $total_stages += $mcount;
     $total_passed += $passed;

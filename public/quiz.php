@@ -207,10 +207,15 @@ if ($selected_module && isset($QUIZZES[$selected_module])) {
     <h2>📝 阶段测验</h2>
     <p>选择模块开始测验，检验理论掌握程度。</p>
     <div class="grid">
-      <?php foreach ($QUIZZES as $mod => $questions):
-          $best = db()->prepare("SELECT MAX(score*100.0/total) as pct FROM quiz_scores WHERE user=? AND category=?");
-          $best->execute([$user, $mod]);
-          $best_pct = round($best->fetchColumn() ?? 0);
+      <?php
+      // 一次 GROUP BY 取回全部模块最佳成绩，避免每模块一次 MAX 查询
+      $best_map = [];
+      try {
+          $best = db()->prepare("SELECT category, MAX(score*100.0/total) AS pct FROM quiz_scores WHERE user=? GROUP BY category");
+          $best->execute([$user]);
+          foreach ($best->fetchAll() as $r) $best_map[$r['category']] = round($r['pct'] ?? 0);
+      } catch (Exception $e) {}
+      foreach ($QUIZZES as $mod => $questions): $best_pct = $best_map[$mod] ?? 0;
       ?>
         <a class="mod-card" href="/quiz.php?module=<?= $mod ?>">
           <h3><?= h($MODULES[$mod][0]) ?></h3>

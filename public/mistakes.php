@@ -16,9 +16,10 @@ render_header('错题本', null);
 $has_unpassed = false;
 foreach ($MODULES as $mkey => $minfo) {
     [$mname, $mdesc, $mcount] = $minfo;
+    $done_set = passed_set($mkey);
     $unpassed = [];
     for ($i = 1; $i <= $mcount; $i++) {
-        if (!is_passed($mkey, $i)) $unpassed[] = $i;
+        if (!isset($done_set[$i])) $unpassed[] = $i;
     }
     if (!$unpassed) continue;
     $has_unpassed = true;

@@ -47,6 +47,8 @@ pre { font-family: var(--mono); }
 /* 按钮 */
 .btn-hack { background: var(--hack-green) !important; color: #0d1117 !important; border: none !important; font-weight: 600; }
 .btn-hack:hover { background: #b3ff3a !important; color: #0d1117 !important; }
+.btn-mini { display: inline-block; padding: 3px 10px; border-radius: 6px; border: 1px solid var(--bd); background: var(--bg-card); color: var(--t2); font-size: 12px; text-decoration: none; transition: all .12s; }
+.btn-mini:hover { border-color: var(--hack-green); color: var(--hack-green); background: rgba(159,239,0,.06); }
 
 /* 表单 */
 .form-control, .form-select {
