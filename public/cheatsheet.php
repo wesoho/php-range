@@ -17,7 +17,7 @@ $CHEATSHEET = [
             '时间盲注' => "id=1' AND SLEEP(3)--",
             '宽字节' => "id=1%df' OR 1=1--",
         ],
-        'defense' => 'PDO 预处理参数化查询（prepare + execute），禁止拼接 SQL',
+        'defense' => 'PDO 预处理参数化查询（prepare + execute），禁止拼接 SQL。注：本靶场为 SQLite——无 updatexml/SLEEP/information_schema，报错注入用 UNION 替代、时间盲注用 randomblob() 替代；上表 payload 以 MySQL 语法为主，供打 MySQL 靶场参考',
     ],
     'XSS' => [
         'owasp' => 'A03:2021-Injection',

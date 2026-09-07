@@ -64,6 +64,20 @@ INSERT OR IGNORE INTO goods (id,name,price,descr) VALUES (3,'显示器',1299.00,
 INSERT OR IGNORE INTO goods (id,name,price,descr) VALUES (4,'耳机',399.00,'降噪耳机');
 INSERT OR IGNORE INTO goods (id,name,price,descr) VALUES (5,'主机',5999.00,'游戏主机');
 
+-- update/delete 注入练习用副本表（可随意篡改/清空，不影响其他关卡）
+CREATE TABLE IF NOT EXISTS sqli_upd (
+    id INTEGER PRIMARY KEY,
+    username TEXT,
+    email TEXT
+);
+CREATE TABLE IF NOT EXISTS sqli_del (
+    id INTEGER PRIMARY KEY,
+    username TEXT,
+    email TEXT
+);
+INSERT OR IGNORE INTO sqli_upd (id,username,email) VALUES (1,'admin','admin@range.local'),(2,'guest','guest@range.local'),(3,'test','test@range.local');
+INSERT OR IGNORE INTO sqli_del (id,username,email) VALUES (1,'admin','admin@range.local'),(2,'guest','guest@range.local'),(3,'test','test@range.local');
+
 -- 留言板（存储型XSS、二次注入、搜索型注入）
 CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
