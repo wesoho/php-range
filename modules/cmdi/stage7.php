@@ -48,7 +48,7 @@ cmdi_head(7, '过滤cat命令', '过滤 cat 关键字但可用 tac/more/less/hea
 <?php endif; ?>
 <?php
 cmdi_tail(
-    ['hint' => '过滤了 cat，用 tac/more/head 绕过', 'full' => '127.0.0.1;tac /etc/passwd'],
+    ['hint' => '过滤了 cat，用 tac/more（Linux）或 type（Windows）', 'full' => '127.0.0.1;tac /etc/passwd　或　127.0.0.1&type C:\Windows\win.ini'],
     [
     '原理' => '命令注入第 7 关：过滤 cat 关键字但可用 tac/more/less/head 绕过。<br>OS 命令注入：用户输入被拼接到系统命令中，攻击者通过特殊字符（; | & $() ` 等）注入额外命令。',
     '漏洞代码' => '<pre>$ip = $_GET["ip"];

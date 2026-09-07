@@ -4,8 +4,9 @@ require_once dirname(__DIR__, 2) . '/config.php';
 require_once APP_ROOT . '/includes/infoleak_helper.php';
 if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $passed = false; $output = '';
-$configs = ['/workspace/php-range/config.php','/workspace/php-range/data/init.sql'];
-foreach ($configs as $c) { if (file_exists($c)) { $output .= '配置文件: '.$c.' (存在)
+// 演示：配置文件就在 web 可达目录内（真实项目应移出 web 根或禁止直接访问）
+$configs = [APP_ROOT . '/config.php', APP_ROOT . '/data/init.sql'];
+foreach ($configs as $c) { if (file_exists($c)) { $output .= '配置文件: ' . basename($c) . ' (存在于站点目录，可被直接请求)
 '; $passed = true; } }
 if ($passed) pass_stage('infoleak',5,'config leak');
 infoleak_head(5, '配置文件', '配置文件可被直接访问');

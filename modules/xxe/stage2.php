@@ -7,7 +7,7 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $xml = $_POST['xml'] ?? ''; $output = ''; $passed = false;
 if ($xml) {
     if ($level === 'impossible') { $output = '安全'; }
-    else { $doc = new DOMDocument(); libxml_use_internal_errors(true); $ret = @$doc->loadXML($xml, LIBXML_NOENT); if ($ret) { $output = $doc->textContent; } else { $errs = libxml_get_errors(); $output = '错误：'.implode('; ', array_map(fn($e)=>$e->message, $errs)); } if (stripos($output,'root:') !== false || stripos($output,'No such file') !== false || strlen($output) > 5) $passed = true; }
+    else { $doc = new DOMDocument(); libxml_use_internal_errors(true); $ret = @$doc->loadXML($xml, LIBXML_NOENT); if ($ret) { $output = $doc->textContent; } else { $errs = libxml_get_errors(); $output = '错误：'.implode('; ', array_map(fn($e)=>$e->message, $errs)); } if (stripos($output,'root:') !== false || stripos($output,'[fonts]') !== false || stripos($output,'for 16-bit') !== false || stripos($output,'[fonts]') !== false || stripos($output,'No such file') !== false || strlen($output) > 5) $passed = true; }
 }
 if ($passed) pass_stage('xxe',2,'xxe');
 
@@ -17,7 +17,7 @@ xxe_head(2, '盲注XXE', '无回显用错误信息判断');
 <?php if ($output): ?><div class="result"><h3>结果：</h3><pre class="code"><?= h($output) ?></pre></div><?php endif; ?>
 <?php if ($passed) xxe_pass(true); ?>
 <?php
-xxe_tail(['hint' => '用错误信息判断文件是否存在', 'full' => '<!DOCTYPE x[<!ENTITY e SYSTEM "file:///etc/passwd">]><x>&e;</x>'], [
+xxe_tail(['hint' => '用错误信息判断文件是否存在', 'full' => '<!DOCTYPE x[<!ENTITY e SYSTEM "file:///C:/Windows/win.ini">]><x>&e;</x>'], [
     '原理' => 'XXE第2关：无回显用错误判断',
     '漏洞代码' => '<pre>通过错误信息判断文件</pre>',
     '攻击演示' => 'payload: 读不存在的文件看错误',

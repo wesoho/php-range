@@ -6,7 +6,7 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 
 $level = get_level(); $page = $_GET['page'] ?? 'home'; $output = ''; $passed = false;
 if ($level === 'impossible') { $wl = ['home','about']; $output = in_array($page,$wl) ? '加载'.$page : '拒绝'; }
-else { $output = @file_get_contents($page) ?: '文件不存在'; if (stripos($output,'root:') !== false) $passed = true; }
+else { $output = @file_get_contents($page) ?: '文件不存在'; if (stripos($output,'root:') !== false || stripos($output,'[fonts]') !== false || stripos($output,'for 16-bit') !== false) $passed = true; }
 if ($passed) pass_stage('lfi',1,'page='.$page);
 
 lfi_head(1, '本地文件包含', 'include直接拼接用户输入');
@@ -15,7 +15,7 @@ lfi_head(1, '本地文件包含', 'include直接拼接用户输入');
 <?php if ($output): ?><div class="result"><h3>内容：</h3><pre class="code"><?= h(mb_substr($output,0,2000)) ?></pre></div><?php endif; ?>
 <?php if ($passed) lfi_pass(true); ?>
 <?php
-lfi_tail(['hint' => '直接读/etc/passwd', 'full' => 'page=/etc/passwd'], [
+lfi_tail(['hint' => '直接读/etc/passwd', 'full' => 'page=/etc/passwd　或　page=C:\Windows\win.ini'], [
     '原理' => 'LFI第1关：include直接拼接用户输入',
     '漏洞代码' => '<pre>echo file_get_contents($_GET["page"]);</pre>',
     '攻击演示' => 'payload: page=/etc/passwd',

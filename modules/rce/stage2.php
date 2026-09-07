@@ -21,7 +21,7 @@ rce_head(2, 'assert注入', 'assert执行代码');
 <?php if ($output): ?><div class="result"><h3>输出：</h3><pre class="code"><?= h($output) ?></pre></div><?php endif; ?>
 <?php if ($passed) rce_pass(true); ?>
 <?php
-rce_tail(['hint' => 'assert执行代码', 'full' => 'code=phpinfo()'], [
+rce_tail(['hint' => 'assert执行代码', 'full' => 'code=phpinfo();'], [
     '原理' => 'RCE第2关：assert执行用户输入。<b>注</b>：PHP 7.2 起弃用字符串断言，PHP 8 已完全移除该能力，本关用 eval 等价模拟旧行为供练习。',
     '漏洞代码' => '<pre>assert($code);</pre>',
     '攻击演示' => 'payload: code=phpinfo()',

@@ -6,7 +6,7 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 
 $level = get_level(); $page = $_GET['page'] ?? 'home'; $output = ''; $passed = false;
 if ($level === 'impossible') { $page = basename($page); $output = '安全：'.$page; }
-else { $file = APP_ROOT.'/pages/'.$page; $output = @file_get_contents($file) ?: @file_get_contents($page) ?: '不存在'; if (stripos($output,'root:') !== false) $passed = true; }
+else { $file = APP_ROOT.'/pages/'.$page; $output = @file_get_contents($file) ?: @file_get_contents($page) ?: '不存在'; if (stripos($output,'root:') !== false || stripos($output,'[fonts]') !== false || stripos($output,'for 16-bit') !== false) $passed = true; }
 if ($passed) pass_stage('lfi',2,'page='.$page);
 
 lfi_head(2, '路径穿越', 'include pages/.$page，用../穿越');
@@ -15,7 +15,7 @@ lfi_head(2, '路径穿越', 'include pages/.$page，用../穿越');
 <?php if ($output): ?><div class="result"><h3>内容：</h3><pre class="code"><?= h(mb_substr($output,0,2000)) ?></pre></div><?php endif; ?>
 <?php if ($passed) lfi_pass(true); ?>
 <?php
-lfi_tail(['hint' => '用../穿越目录前缀', 'full' => 'page=../../../etc/passwd'], [
+lfi_tail(['hint' => '用../穿越目录前缀', 'full' => 'page=../../../etc/passwd　或　page=../data/secret/passwd.txt'], [
     '原理' => 'LFI第2关：目录前缀+../穿越',
     '漏洞代码' => '<pre>include "pages/".$page;</pre>',
     '攻击演示' => 'payload: page=../../../etc/passwd',

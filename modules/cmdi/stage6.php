@@ -48,7 +48,7 @@ cmdi_head(6, '过滤空格', '过滤空格但可用 $IFS 或 {cat,/etc/passwd} �
 <?php endif; ?>
 <?php
 cmdi_tail(
-    ['hint' => '过滤了空格，用 $IFS 或大括号绕过', 'full' => '127.0.0.1;cat${IFS}/etc/passwd'],
+    ['hint' => '过滤了空格，用 $IFS 或大括号绕过', 'full' => '127.0.0.1;cat${IFS}/etc/passwd　或　127.0.0.1&whoami'],
     [
     '原理' => '命令注入第 6 关：过滤空格但可用 $IFS 或 {cat,/etc/passwd} 绕过。<br>OS 命令注入：用户输入被拼接到系统命令中，攻击者通过特殊字符（; | & $() ` 等）注入额外命令。',
     '漏洞代码' => '<pre>$ip = $_GET["ip"];

@@ -12,7 +12,7 @@ if ($url) {
         else $output = @file_get_contents($url) ?: '请求失败';
     } else {
         $output = @file_get_contents($url) ?: '请求失败';
-        if (stripos($output, 'root:') !== false) $passed = true;
+        if (stripos($output,'root:') !== false || stripos($output,'[fonts]') !== false || stripos($output,'for 16-bit') !== false) $passed = true;
     }
 }
 if ($passed) pass_stage('ssrf', 1, 'url=' . $url);
@@ -23,7 +23,7 @@ ssrf_head(1, '无过滤SSRF', '服务器请求任意URL，可读内网/本地文
 <?php if ($output): ?><div class="result"><h3>响应：</h3><pre class="code"><?= h(mb_substr($output,0,2000)) ?></pre></div><?php endif; ?>
 <?php if ($passed) ssrf_pass(true); ?>
 <?php
-ssrf_tail(['hint' => '用 file:// 协议读本地文件', 'full' => 'url=file:///etc/passwd'], [
+ssrf_tail(['hint' => '用 file:// 协议读本地文件', 'full' => 'url=file:///etc/passwd　或　url=file:///C:/Windows/win.ini'], [
     '原理' => 'SSRF 第1关：file_get_contents($url) 无任何过滤，支持 file:// http:// ftp:// 等协议',
     '漏洞代码' => '<pre>$url = $_GET["url"];
 echo file_get_contents($url);</pre>',

@@ -21,7 +21,14 @@ try {
     } else {
         $rows = $pdo->query("SELECT id,username,email FROM sqli_users WHERE id='$id'")->fetchAll();
     }
-    $passed = sqli_check_pass($rows, 1, 'flag');
+    // 时间盲注判定（仅 low/medium）：注入的 randomblob 让 SQL 耗时显著增加
+    if ($level !== 'impossible' && $level !== 'high') {
+        $tpl = 'SELECT id,username,email FROM sqli_users WHERE id=\'$ID\'';
+        $t0 = microtime(true);
+        $rows = $pdo->query(str_replace('$ID', $id, $tpl))->fetchAll();
+        $elapsed_ms = round((microtime(true) - $t0) * 1000);
+        $passed = $elapsed_ms >= 150 && stripos($id, 'randomblob') !== false;
+    }
 } catch (Exception $e) { $err = $e->getMessage(); }
 if ($passed) pass_stage('sqli', 13, $id);
 

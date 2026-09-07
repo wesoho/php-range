@@ -13,7 +13,7 @@ if ($url) {
             $output = '拒绝：不允许内网';
         } else {
             $output = @file_get_contents($url) ?: '请求失败';
-            if (stripos($output, 'root:') !== false || stripos($output, 'DOCTYPE') !== false) $passed = true;
+            if (stripos($output,'root:') !== false || stripos($output,'[fonts]') !== false || stripos($output,'for 16-bit') !== false || stripos($output, 'DOCTYPE') !== false) $passed = true;
         }
     }
 }
@@ -25,7 +25,7 @@ ssrf_head(4, 'URL解析差异', '检查parse_url的host但可用@绕过');
 <?php if ($output): ?><div class="result"><h3>响应：</h3><pre class="code"><?= h(mb_substr($output,0,2000)) ?></pre></div><?php endif; ?>
 <?php if ($passed) ssrf_pass(true); ?>
 <?php
-ssrf_tail(['hint' => '用file://协议绕过host检查', 'full' => 'url=file:///etc/passwd'], [
+ssrf_tail(['hint' => '用file://协议绕过host检查', 'full' => 'url=file:///etc/passwd　或　url=file:///C:/Windows/win.ini'], [
     '原理' => 'SSRF 第4关：parse_url对file://协议返回空host，绕过检查',
     '漏洞代码' => '<pre>$host = parse_url($url, PHP_URL_HOST);
 if (strpos($host, "127.0.0.1") !== false) die();</pre>',

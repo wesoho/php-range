@@ -13,7 +13,7 @@ if ($url) {
         if (in_array($host, $blacklist)) { $output = '拒绝：黑名单IP'; }
         else {
             $output = @file_get_contents($url) ?: '请求失败';
-            if (stripos($output, 'root:') !== false) $passed = true;
+            if (stripos($output,'root:') !== false || stripos($output,'[fonts]') !== false || stripos($output,'for 16-bit') !== false) $passed = true;
         }
     }
 }
@@ -25,7 +25,7 @@ ssrf_head(2, 'IP黑名单绕过', '禁止127.0.0.1但可用0.0.0.0或十进制�
 <?php if ($output): ?><div class="result"><h3>响应：</h3><pre class="code"><?= h(mb_substr($output,0,2000)) ?></pre></div><?php endif; ?>
 <?php if ($passed) ssrf_pass(true); ?>
 <?php
-ssrf_tail(['hint' => '黑名单不含0.0.0.0或十进制IP', 'full' => 'url=file:///etc/passwd（file协议无host不触发黑名单）'], [
+ssrf_tail(['hint' => '黑名单不含0.0.0.0或十进制IP', 'full' => 'url=file:///etc/passwd　或　url=file:///C:/Windows/win.ini（file协议无host不触发黑名单）'], [
     '原理' => 'SSRF 第2关：检查host是否在黑名单，但file://协议无host可绕过',
     '漏洞代码' => '<pre>if (in_array($host, $blacklist)) die("拒绝");
 echo file_get_contents($url);</pre>',

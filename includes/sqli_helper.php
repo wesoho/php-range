@@ -65,3 +65,17 @@ function sqli_check_pass($rows, $expected_max = 1, $keyword = null) {
     }
     return false;
 }
+
+// 布尔盲注判定：payload 的恒真条件换为恒假后行数应归零（真/假可区分即通关）
+function sqli_blind_false_variant($s) {
+    $s = str_replace("='1", "='2", $s);
+    $s = str_replace('="1', '="2', $s);
+    $s = str_replace('=1', '=2', $s);
+    return $s;
+}
+
+function sqli_check_blind($rows_true, $rows_false, $raw = null) {
+    // 必须真的使用了布尔运算符注入（防止普通 id=1 误判）
+    if ($raw !== null && !preg_match('/(^|[^a-zA-Z])(AND|OR)([^a-zA-Z]|$)/i', $raw)) return false;
+    return count($rows_true) >= 1 && count($rows_false) === 0;
+}

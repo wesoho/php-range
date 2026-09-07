@@ -7,7 +7,7 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $xml = $_POST['xml'] ?? ''; $output = ''; $passed = false;
 if ($xml) {
     if ($level === 'impossible') { $output = '安全'; }
-    else { $doc = new DOMDocument(); try { $doc->loadXML($xml, LIBXML_NOENT | LIBXML_DTDLOAD); $output = $doc->textContent; if (stripos($output,'root:') !== false || strlen($output) > 5) $passed = true; } catch (Exception $e) { $output = '错误：'.$e->getMessage(); } }
+    else { $doc = new DOMDocument(); try { $doc->loadXML($xml, LIBXML_NOENT | LIBXML_DTDLOAD); $output = $doc->textContent; if (stripos($output,'root:') !== false || stripos($output,'[fonts]') !== false || stripos($output,'for 16-bit') !== false || stripos($output,'[fonts]') !== false || strlen($output) > 5) $passed = true; } catch (Exception $e) { $output = '错误：'.$e->getMessage(); } }
 }
 if ($passed) pass_stage('xxe',3,'xxe');
 
@@ -17,7 +17,7 @@ xxe_head(3, '参数实体绕过', '用%参数实体绕过普通实体过滤');
 <?php if ($output): ?><div class="result"><h3>结果：</h3><pre class="code"><?= h($output) ?></pre></div><?php endif; ?>
 <?php if ($passed) xxe_pass(true); ?>
 <?php
-xxe_tail(['hint' => '用参数实体绕过过滤', 'full' => '<!DOCTYPE x[<!ENTITY % e SYSTEM "file:///etc/passwd"><!ENTITY x "%e;">]><x>&x;</x>'], [
+xxe_tail(['hint' => '用参数实体绕过过滤', 'full' => '<!DOCTYPE x[<!ENTITY % e SYSTEM "file:///C:/Windows/win.ini"><!ENTITY x "%e;">]><x>&x;</x>'], [
     '原理' => 'XXE第3关：用%实体绕过过滤',
     '漏洞代码' => '<pre>参数实体可绕过普通实体过滤</pre>',
     '攻击演示' => 'payload: <!ENTITY % e SYSTEM ...>',

@@ -23,7 +23,7 @@ rce_head(3, 'preg_replace /e', 'preg_replace /e修饰符执行代码');
 <?php if ($output): ?><div class="result"><h3>输出：</h3><pre class="code"><?= h($output) ?></pre></div><?php endif; ?>
 <?php if ($passed) rce_pass(true); ?>
 <?php
-rce_tail(['hint' => 'preg_replace /e修饰符', 'full' => 'code=phpinfo()'], [
+rce_tail(['hint' => 'preg_replace /e修饰符', 'full' => 'code=phpinfo();'], [
     '原理' => 'RCE第3关：正则/e修饰符',
     '漏洞代码' => '<pre>preg_replace("/.*/e",$code,$text)</pre>',
     '攻击演示' => 'payload: code=phpinfo()',

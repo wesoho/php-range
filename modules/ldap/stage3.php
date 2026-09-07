@@ -6,7 +6,7 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $input = $_GET['input'] ?? ''; $output = ''; $passed = false;
 if ($input) {
     if ($level === 'impossible') { $input = str_replace(array("'",'"','/','[',']'),'',$input); $output = '安全: '.$input; }
-    else { $xpath = "//user[@name=$input]"; $output = 'XPath: '.$xpath; if (strpos($input,"or 1=1") !== false || strpos($input,"']") !== false) $passed = true; }
+    else { $xpath = "//user[@name=$input]"; $output = 'XPath: '.$xpath; if (preg_match('/or\s+.?1.?=.?1/i', $input) || strpos($input,"']") !== false) $passed = true; }
 }
 if ($passed) pass_stage('ldap',3,'input='.$input);
 ldap_head(3, 'XPath注入', 'XPath查询注入');

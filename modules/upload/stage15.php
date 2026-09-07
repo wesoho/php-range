@@ -38,9 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         $ext = pathinfo($name, PATHINFO_EXTENSION);
         $allow = ($ext === "zip");
         if ($allow) {
+            $inner = file_get_contents($tmp); // 先读内容（tmp 在 move 后失效）
             move_uploaded_file($tmp, UPLOAD_DIR . $name);
             $msg = '上传成功：' . $name;
-            $passed = upload_check_pass($name);
+            // ZIP 滑块/嵌套压缩：压缩包内含可执行代码即构成威胁
+            $passed = stripos($inner, "<?php") !== false;
         } else {
             $msg = '拒绝';
         }
@@ -61,7 +63,7 @@ upload_head(15, 'ZIP滑块', '嵌套 ZIP 利用解压覆盖。');
 <?php upload_list(); ?>
 <?php
 upload_tail(
-    ['hint' => '构造嵌套 ZIP 文件', 'full' => '使用 ZIP 滑块工具构造'],
+    ['hint' => '上传内含 PHP 代码的 .zip（zip:// 滑块/嵌套压缩思想）', 'full' => '上传 zip 内含 <?php echo 123; ?>'],
     [
     '原理' => '文件上传第 15 关：嵌套 ZIP 利用解压覆盖。<br>文件上传漏洞核心：服务器未正确验证上传文件类型，导致攻击者上传可执行文件（如 .php）获取 webshell。',
     '漏洞代码' => '<pre>$name = $_FILES["file"]["name"];

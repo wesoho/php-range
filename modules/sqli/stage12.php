@@ -21,7 +21,15 @@ try {
     } else {
         $rows = $pdo->query("SELECT id,username,email FROM sqli_users WHERE id=('$id')")->fetchAll();
     }
-    $passed = sqli_check_pass($rows, 1, 'flag');
+    // 盲注判定（仅 low/medium）：以恒真/恒假两次查询的可区分性判定
+    if ($level !== 'impossible' && $level !== 'high') {
+        $tpl = 'SELECT id,username,email FROM sqli_users WHERE id=(\'$ID\')';
+        $sql_true  = str_replace('$ID', $id, $tpl);
+        $sql_false = str_replace('$ID', sqli_blind_false_variant($id), $tpl);
+        $rows_true2  = $pdo->query($sql_true)->fetchAll();
+        $rows_false = $pdo->query($sql_false)->fetchAll();
+        $passed = sqli_check_blind($rows_true2, $rows_false, $id);
+    }
 } catch (Exception $e) { $err = $e->getMessage(); }
 if ($passed) pass_stage('sqli', 12, $id);
 

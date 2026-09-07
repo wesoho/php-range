@@ -43,7 +43,9 @@ function upload_tail($hints, $tutorial, $source_file) {
 function upload_check_pass($filename) {
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     $dangerous = ['php','phtml','pht','php3','php4','php5','php7','phps','htaccess'];
-    return in_array($ext, $dangerous);
+    if (in_array($ext, $dangerous)) return true;
+    // 双扩展（shell.php.jpg）/ 空字节（shell.php%00.jpg）等黑名单漏判形态
+    return (bool)preg_match('/\.php\d?[\.\x00]/i', $filename) || stripos($filename, '%00') !== false;
 }
 
 // 列出已上传文件
