@@ -9,7 +9,7 @@ $expected_token = $level === 'high' ? hash_hmac('sha256','csrf',session_id()) : 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newpwd = $_POST['newpwd'] ?? ''; $token = $_POST['token'] ?? '';
     if ($level === 'impossible') { $passed = hash_equals(hash_hmac('sha256','csrf',session_id()),$token); }
-    else { $passed = ($token === $expected_token || $token === substr(md5(time()),0,8)); $msg = $passed?'修改成功':'Token错误'; }
+    else { $passed = ($token === $expected_token); $msg = $passed?'修改成功':'Token错误'; }
 }
 if ($passed) pass_stage('csrf',3,'csrf');
 
@@ -18,7 +18,7 @@ csrf_head(3, 'Token可预测', 'Token基于时间生成可预测');
 <form method="post" class="lab"><input type="hidden" name="token" value="<?= $expected_token ?>"><div class="row"><label>新密码</label><input type="text" name="newpwd" style="width:300px"></div><div class="row"><input type="submit" value="修改密码"></div></form>
 <?php if ($passed) csrf_pass(true); ?>
 <?php
-csrf_tail(['hint' => 'Token基于时间可预测', 'full' => '分析Token规律后伪造'], [
+csrf_tail(['hint' => 'Token 是 substr(md5(time()),0,8)，可预测', 'full' => 'token=substr(md5(time()),0,8)（提交时实时计算，跨秒重试）'], [
     '原理' => 'CSRF第3关：Token=md5(time())',
     '漏洞代码' => '<pre>Token基于时间可预测</pre>',
     '攻击演示' => 'payload: 分析规律伪造Token',

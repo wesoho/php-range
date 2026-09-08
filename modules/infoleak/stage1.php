@@ -9,6 +9,7 @@ $files = glob($dir.'/*'); $output = '目录内容：
 ';
 foreach ($files as $f) { $output .= basename($f).' ('.filesize($f).' B)
 '; }
+if (count($files) === 0) { @file_put_contents($dir.'/readme.txt', "directory listing demo\n"); $files = glob($dir.'/*'); }
 if (count($files) > 0) $passed = true;
 if ($passed) pass_stage('infoleak',1,'dir listing');
 infoleak_head(1, '目录列表', '开启目录浏览暴露文件列表');

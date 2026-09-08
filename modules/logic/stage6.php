@@ -7,7 +7,7 @@ if (empty($_SESSION['user'])) { header('Location: /login.php'); exit; }
 $level = get_level(); $amount = $_GET['amount'] ?? '100'; $output = ''; $passed = false;
 $amt = intval($amount);
 if ($level === 'impossible') { if ($amt > 10000 || $amt < 0) { $output = '拒绝：金额超限'; } else { $output = '转账：'.$amt; } }
-else { $balance = 1000; if ($amt > $balance) { $output = '余额不足'; } else { $output = '转账'.$amt.'成功'; } if ($amt < 0 || $amt > PHP_INT_MAX - 1) $passed = true; }
+else { $balance = 1000; if ($amt > $balance) { $output = '余额不足'; } else { $output = '转账'.$amt.'成功'; } if ($amt < 0) $passed = true; /* PHP8 int 为 64 位不溢出，负数金额是现实可用的逻辑漏洞形态 */ }
 if ($passed) pass_stage('logic',6,'amount='.$amount);
 
 logic_head(6, '整数溢出', '数值溢出导致逻辑错误');
